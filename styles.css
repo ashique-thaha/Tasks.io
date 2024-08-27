@@ -1,0 +1,251 @@
+body {
+    background: linear-gradient(135deg, #111a2c, #162135);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+    background: linear-gradient(135deg, #0e183a, #60373a);
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: white;
+    position: relative;
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% {
+        transform: translateY(0px);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        transform: translateY(-10px);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 50px rgba(255, 255, 255, 0.4), 0 0 70px rgba(255, 255, 255, 0.3);
+    }
+    100% {
+        transform: translateY(0px);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
+    }
+}
+
+h1 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 70%;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    color: white;
+    background-color: #343a40;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 30px;
+    background-color: #e0e0e0;
+    margin: 10px 0;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 5px;
+    transition: width 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.progress-bar-percentage {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+    color: white;
+}
+
+.task {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px 0;
+    background: #1a1816;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    position: relative;
+}
+
+.task-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.checkbox {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+.task-name {
+    flex: 2;
+    font-size: 1em;
+    margin-right: 20px;
+    text-transform: capitalize;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.progress-bar-container {
+    flex: 2;
+    width: 100%;
+}
+
+.add-subtask,
+.delete-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-subtask {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.add-subtask:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.subtask-list {
+    margin-left: 20px;
+    list-style: none;
+    padding-left: 0;
+}
+
+.subtask {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    padding-left: 20px; /* Indentation like an if-statement */
+}
+
+.subtask-checkbox {
+    margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    button {
+        font-size: 0.9em;
+        padding: 8px 16px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Colors for progress bar based on percentage */
+.progress-bar-fill[data-percentage="0"] {
+    background-color: #a9a9a9; /* Grey for 0% */
+}
+
+.progress-bar-fill[data-percentage="25"] {
+    background-color: #2528cb; /* Yellow for 25% */
+}
+
+.progress-bar-fill[data-percentage="50"] {
+    background-color: #4c0949; /* Orange for 50% */
+}
+
+.progress-bar-fill[data-percentage="75"] {
+    background-color: #891a22; /* Deep Orange for 75% */
+}
+
+.progress-bar-fill[data-percentage="100"] {
+    background-color: #4caf50; /* Green for 100% */
+}
+
+/* Keep the existing styles from previous versions */
+
+.task-completed {
+    text-decoration: line-through;
+}
+
+/* Add styles for subtask delete button */
+.subtask .delete-button {
+    margin-left: 20px;
+    padding: 5px 10px;
+    background-color: #c82333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.subtask .delete-button:hover {
+    background-color: #c82333;
+}
