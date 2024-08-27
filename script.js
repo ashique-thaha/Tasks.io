@@ -33,7 +33,7 @@ function renderTasks() {
                     <li class="subtask">
                         <input type="checkbox" class="subtask-checkbox" ${subtask.completed ? 'checked' : ''} onchange="toggleSubtask(${task.id}, ${subtask.id})">
                         <span class="${subtask.completed ? 'task-completed' : ''}">${capitalizeFirstLetter(subtask.title)}</span>
-                        <button class="delete-button" onclick="deleteSubtask(${task.id}, ${subtask.id})">Delete Subtask</button>
+                        <button class="delete-button" onclick="deleteSubtask(${task.id}, ${subtask.id})">Delete</button>
                     </li>`).join('')}
             </ul>
         `;
