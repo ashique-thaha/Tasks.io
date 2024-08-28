@@ -15,25 +15,11 @@ body {
     padding: 20px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    color: white;
+    color: rgb(255, 255, 255);
     position: relative;
-    animation: floating 3s ease-in-out infinite;
 }
 
-@keyframes floating {
-    0% {
-        transform: translateY(0px);
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
-    }
-    50% {
-        transform: translateY(-10px);
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 50px rgba(255, 255, 255, 0.4), 0 0 70px rgba(255, 255, 255, 0.3);
-    }
-    100% {
-        transform: translateY(0px);
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.2);
-    }
-}
+/* Removed floating animation */
 
 h1 {
     font-size: 1.8em;
@@ -121,6 +107,38 @@ button:hover {
     width: 100%;
 }
 
+/* Arrow button for expanding/collapsing subtasks */
+.arrow {
+    cursor: pointer;
+    font-size: 2.5em;
+    margin-right: 10px;
+    transform: rotate(0deg);
+    transition: transform 0.3s;
+}
+.arrow-button {
+    background: none;
+    border: none;
+    font-size: 1.5 em;
+    cursor: pointer;
+    margin-right: 10px;
+    color: rgb(255, 255, 255); /* Minimal theme color */
+    padding: 0;
+    transition: transform 0.3s ease;
+}
+.arrow-button:focus {
+    outline: none;
+}
+.arrow-button.right {
+    transform: rotate(90deg); /* Arrow points to the right */
+}
+.arrow-button.down {
+    transform: rotate(180deg); /* Arrow points downward */
+}
+
+.arrow.down {
+    transform: rotate(90deg);
+}
+
 .checkbox {
     margin-right: 10px;
     transform: scale(1.2);
@@ -173,6 +191,7 @@ button:hover {
     margin-left: 20px;
     list-style: none;
     padding-left: 0;
+    display: none; /* Initially hidden */
 }
 
 .subtask {
@@ -229,13 +248,10 @@ button:hover {
     background-color: #4caf50; /* Green for 100% */
 }
 
-/* Keep the existing styles from previous versions */
-
 .task-completed {
     text-decoration: line-through;
 }
 
-/* Add styles for subtask delete button */
 .subtask .delete-button {
     margin-left: 20px;
     padding: 5px 10px;
@@ -249,3 +265,4 @@ button:hover {
 .subtask .delete-button:hover {
     background-color: #c82333;
 }
+

@@ -1,10 +1,16 @@
-// Define global variables
+// Get references to DOM elements
 const taskList = document.getElementById('task-list');
 const addTaskButton = document.getElementById('add-task-button');
 const newTaskNameInput = document.getElementById('new-task-name');
 const overallProgressBar = document.querySelector('#overall-progress-bar .progress-bar-fill');
 
 let tasks = [];
+
+// Function to initialize the app and render the tasks
+function init() {
+    loadTasks();
+    renderTasks();
+}
 
 // Function to render tasks
 function renderTasks() {
@@ -16,6 +22,7 @@ function renderTasks() {
         taskItem.className = 'task';
         taskItem.innerHTML = `
             <div class="task-header">
+                <span class="arrow" onclick="toggleSubtaskVisibility(${task.id})">${task.expanded ? '&#x293B;' : '&#x293C;'}</span>
                 <input type="checkbox" class="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
                 <span class="task-name ${task.completed ? 'task-completed' : ''}">${capitalizeFirstLetter(task.title)}</span>
                 <div class="progress-bar-container">
@@ -28,7 +35,7 @@ function renderTasks() {
                 <button class="add-subtask" onclick="addSubtask(${task.id})">Add Subtask</button>
                 <button class="delete-button" onclick="deleteTask(${task.id})">Delete</button>
             </div>
-            <ul class="subtask-list" id="subtask-list-${task.id}">
+            <ul class="subtask-list" id="subtask-list-${task.id}" style="display: ${task.expanded ? 'block' : 'none'};">
                 ${task.subtasks.map(subtask => `
                     <li class="subtask">
                         <input type="checkbox" class="subtask-checkbox" ${subtask.completed ? 'checked' : ''} onchange="toggleSubtask(${task.id}, ${subtask.id})">
@@ -42,23 +49,6 @@ function renderTasks() {
     updateOverallProgress();
 }
 
-// Function to get subtask progress percentage as an integer
-function getSubtaskProgress(subtasks) {
-    const totalSubtasks = subtasks.length;
-    const completedSubtasks = subtasks.filter(st => st.completed).length;
-    const progress = totalSubtasks > 0 ? Math.floor((completedSubtasks / totalSubtasks) * 100) : 0;
-    return progress;
-}
-
-// Function to get progress bar color based on percentage
-function getProgressBarColor(percentage) {
-    if (percentage === 0) return '#a9a9a9';
-    if (percentage <= 25) return '#ffeb3b';
-    if (percentage <= 50) return '#ff9800';
-    if (percentage <= 75) return '#ff5722';
-    return '#4caf50';
-}
-
 // Function to toggle task completion
 function toggleTask(taskId) {
     const task = tasks.find(t => t.id === taskId);
@@ -67,23 +57,82 @@ function toggleTask(taskId) {
     saveTasks();
 }
 
-// Function to toggle subtask completion
+// Function to toggle subtask completion and update progress immediately
 function toggleSubtask(taskId, subtaskId) {
     const task = tasks.find(t => t.id === taskId);
     const subtask = task.subtasks.find(st => st.id === subtaskId);
     subtask.completed = !subtask.completed;
+    updateProgress(task);
+    renderTasks(); // Re-render tasks to reflect changes
+    saveTasks();
+}
+
+// Function to update parent task's progress bar based on subtasks completion
+function updateProgress(task) {
+    const taskProgress = task.subtasks.length ? getSubtaskProgress(task.subtasks) : task.completed ? 100 : 0;
+    task.completed = (taskProgress === 100);
+    const progressBarColor = getProgressBarColor(taskProgress);
+    const progressBar = document.querySelector(`#subtask-list-${task.id} .progress-bar-fill`);
+    if (progressBar) {
+        progressBar.style.width = `${taskProgress}%`;
+        progressBar.style.backgroundColor = progressBarColor;
+        progressBar.innerText = taskProgress === 0 ? '' : `${taskProgress}%`;
+    }
+}
+
+// Function to get the progress of subtasks
+function getSubtaskProgress(subtasks) {
+    const completedCount = subtasks.filter(subtask => subtask.completed).length;
+    return Math.round((completedCount / subtasks.length) * 100);
+}
+
+// Function to control the visibility of subtasks using the arrow button
+function toggleSubtaskVisibility(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    task.expanded = !task.expanded;
+    renderTasks();
+}
+
+// Function to add a new task
+function addTask() {
+    const taskTitle = newTaskNameInput.value.trim();
+    if (taskTitle === '') return;
+    const newTask = {
+        id: Date.now(),
+        title: taskTitle,
+        completed: false,
+        subtasks: [],
+        expanded: true
+    };
+    tasks.push(newTask);
+    newTaskNameInput.value = '';
     renderTasks();
     saveTasks();
 }
 
-// Function to delete task
+// Function to add a subtask to a task
+function addSubtask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    const subtaskTitle = prompt('Enter subtask title:').trim();
+    if (subtaskTitle === '') return;
+    const newSubtask = {
+        id: Date.now(),
+        title: subtaskTitle,
+        completed: false
+    };
+    task.subtasks.push(newSubtask);
+    renderTasks();
+    saveTasks();
+}
+
+// Function to delete a task
 function deleteTask(taskId) {
     tasks = tasks.filter(t => t.id !== taskId);
     renderTasks();
     saveTasks();
 }
 
-// Function to delete subtask
+// Function to delete a subtask
 function deleteSubtask(taskId, subtaskId) {
     const task = tasks.find(t => t.id === taskId);
     task.subtasks = task.subtasks.filter(st => st.id !== subtaskId);
@@ -91,41 +140,34 @@ function deleteSubtask(taskId, subtaskId) {
     saveTasks();
 }
 
-// Function to add a new task
-function addNewTask() {
-    const newTaskName = newTaskNameInput.value.trim();
-    if (newTaskName) {
-        const newTask = { id: Date.now(), title: newTaskName, completed: false, subtasks: [] };
-        tasks.push(newTask);
-        renderTasks();
-        saveTasks();
-        newTaskNameInput.value = '';
-    } else {
-        alert('Please enter a task name');
-    }
+// Function to capitalize the first letter of the task or subtask name
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Function to add a new subtask
-function addSubtask(taskId) {
-    const subtaskName = prompt('Enter subtask name:');
-    if (subtaskName) {
-        const task = tasks.find(t => t.id === taskId);
-        const newSubtask = { id: Date.now(), title: subtaskName, completed: false };
-        task.subtasks.push(newSubtask);
-        renderTasks();
-        saveTasks();
-    }
-}
-
-// Function to update overall progress bar
+// Function to update the overall progress bar
 function updateOverallProgress() {
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.completed || getSubtaskProgress(t.subtasks) === 100).length;
-    const progress = totalTasks > 0 ? Math.floor((completedTasks / totalTasks) * 100) : 0;
-    const progressBarColor = getProgressBarColor(progress);
-    overallProgressBar.style.width = `${progress}%`;
-    overallProgressBar.style.backgroundColor = progressBarColor;
-    overallProgressBar.querySelector('.progress-bar-percentage').innerText = progress === 0 ? '' : `${progress}%`;
+    if (tasks.length === 0) {
+        overallProgressBar.style.width = '0%';
+        overallProgressBar.style.backgroundColor = getProgressBarColor(0);
+        overallProgressBar.innerText = '';
+        return;
+    }
+    const totalSubtasks = tasks.reduce((acc, task) => acc + task.subtasks.length, 0);
+    const totalCompletedSubtasks = tasks.reduce((acc, task) => acc + task.subtasks.filter(st => st.completed).length, 0);
+    const overallProgress = totalSubtasks ? Math.round((totalCompletedSubtasks / totalSubtasks) * 100) : 0;
+    overallProgressBar.style.width = `${overallProgress}%`;
+    overallProgressBar.style.backgroundColor = getProgressBarColor(overallProgress);
+    overallProgressBar.innerText = overallProgress === 0 ? '' : `${overallProgress}%`;
+}
+
+// Function to get the color of the progress bar based on the percentage
+function getProgressBarColor(percentage) {
+    if (percentage === 0) return '#a9a9a9';
+    if (percentage <= 25) return '#2528cb';
+    if (percentage <= 50) return '#4c0949';
+    if (percentage <= 75) return '#891a22';
+    return '#4caf50';
 }
 
 // Function to save tasks to local storage
@@ -133,34 +175,14 @@ function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// Function to capitalize the first letter of the task name
-function capitalizeFirstLetter(string) {
-    // Check if the first character is already uppercase
-    if (string.length === 0) return string; // Return empty string if input is empty
-
-    // Capitalize the first letter if it's not already uppercase
-    return string.charAt(0) === string.charAt(0).toUpperCase()
-        ? string // Return the string as is if the first letter is already uppercase
-        : string.charAt(0).toUpperCase() + string.slice(1); // Capitalize the first letter and leave the rest unchanged
-}
-
-
-// Load tasks from local storage on page load
-window.addEventListener('load', () => {
+// Function to load tasks from local storage
+function loadTasks() {
     const savedTasks = localStorage.getItem('tasks');
     if (savedTasks) {
         tasks = JSON.parse(savedTasks);
     }
-    renderTasks();
-});
+}
 
-// Add event listeners
-addTaskButton.addEventListener('click', addNewTask);
-newTaskNameInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        addNewTask();
-    }
-});
-
-
-
+// Event listeners
+addTaskButton.addEventListener('click', addTask);
+document.addEventListener('DOMContentLoaded', init);
