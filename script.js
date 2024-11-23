@@ -1,18 +1,14 @@
-// Get references to DOM elements
 const taskList = document.getElementById('task-list');
 const addTaskButton = document.getElementById('add-task-button');
 const newTaskNameInput = document.getElementById('new-task-name');
 const overallProgressBar = document.querySelector('#overall-progress-bar .progress-bar-fill');
-
 let tasks = [];
 
-// Function to initialize the app and render the tasks
 function init() {
     loadTasks();
     renderTasks();
 }
 
-// Function to render tasks
 function renderTasks() {
     taskList.innerHTML = '';
     tasks.forEach(task => {
@@ -49,7 +45,7 @@ function renderTasks() {
     updateOverallProgress();
 }
 
-// Function to toggle task completion
+
 function toggleTask(taskId) {
     const task = tasks.find(t => t.id === taskId);
     task.completed = !task.completed;
@@ -57,17 +53,16 @@ function toggleTask(taskId) {
     saveTasks();
 }
 
-// Function to toggle subtask completion and update progress immediately
+
 function toggleSubtask(taskId, subtaskId) {
     const task = tasks.find(t => t.id === taskId);
     const subtask = task.subtasks.find(st => st.id === subtaskId);
     subtask.completed = !subtask.completed;
     updateProgress(task);
-    renderTasks(); // Re-render tasks to reflect changes
+    renderTasks(); 
     saveTasks();
 }
 
-// Function to update parent task's progress bar based on subtasks completion
 function updateProgress(task) {
     const taskProgress = task.subtasks.length ? getSubtaskProgress(task.subtasks) : task.completed ? 100 : 0;
     task.completed = (taskProgress === 100);
@@ -80,20 +75,17 @@ function updateProgress(task) {
     }
 }
 
-// Function to get the progress of subtasks
 function getSubtaskProgress(subtasks) {
     const completedCount = subtasks.filter(subtask => subtask.completed).length;
     return Math.round((completedCount / subtasks.length) * 100);
 }
 
-// Function to control the visibility of subtasks using the arrow button
 function toggleSubtaskVisibility(taskId) {
     const task = tasks.find(t => t.id === taskId);
     task.expanded = !task.expanded;
     renderTasks();
 }
 
-// Function to add a new task
 function addTask() {
     const taskTitle = newTaskNameInput.value.trim();
     if (taskTitle === '') return;
@@ -110,7 +102,6 @@ function addTask() {
     saveTasks();
 }
 
-// Function to add a subtask to a task
 function addSubtask(taskId) {
     const task = tasks.find(t => t.id === taskId);
     const subtaskTitle = prompt('Enter subtask title:').trim();
@@ -125,14 +116,12 @@ function addSubtask(taskId) {
     saveTasks();
 }
 
-// Function to delete a task
 function deleteTask(taskId) {
     tasks = tasks.filter(t => t.id !== taskId);
     renderTasks();
     saveTasks();
 }
 
-// Function to delete a subtask
 function deleteSubtask(taskId, subtaskId) {
     const task = tasks.find(t => t.id === taskId);
     task.subtasks = task.subtasks.filter(st => st.id !== subtaskId);
@@ -140,12 +129,10 @@ function deleteSubtask(taskId, subtaskId) {
     saveTasks();
 }
 
-// Function to capitalize the first letter of the task or subtask name
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Function to update the overall progress bar
 function updateOverallProgress() {
     if (tasks.length === 0) {
         overallProgressBar.style.width = '0%';
@@ -161,7 +148,6 @@ function updateOverallProgress() {
     overallProgressBar.innerText = overallProgress === 0 ? '' : `${overallProgress}%`;
 }
 
-// Function to get the color of the progress bar based on the percentage
 function getProgressBarColor(percentage) {
     if (percentage === 0) return '#a9a9a9';
     if (percentage <= 25) return '#2528cb';
@@ -170,12 +156,10 @@ function getProgressBarColor(percentage) {
     return '#4caf50';
 }
 
-// Function to save tasks to local storage
 function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// Function to load tasks from local storage
 function loadTasks() {
     const savedTasks = localStorage.getItem('tasks');
     if (savedTasks) {
@@ -183,6 +167,5 @@ function loadTasks() {
     }
 }
 
-// Event listeners
 addTaskButton.addEventListener('click', addTask);
 document.addEventListener('DOMContentLoaded', init);
